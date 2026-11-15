@@ -1,0 +1,6 @@
+{
+  "name": "Utinga360 - Pedal & Natureza",
+  "description": "Guia inteligente e georreferenciado para visitantes, ciclistas e caminhantes do Parque Estadual do Utinga Camillo Vianna, em Belém do Pará.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

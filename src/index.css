@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-canvas: #F4EFE6;
+  --color-surface: #FFFDF9;
+  --color-surface-inset: #F8F4EC;
+  --color-surface-muted: #EFE8DA;
+  --color-border-clay: #DDD3C1;
+  --color-border-soft: #E7DFCE;
+  --color-forest: #1B4332;
+  --color-forest-hover: #133124;
+  --color-terracotta: #B44B1E;
+  --color-terracotta-bright: #C2592A;
+  --color-lake: #0E7490;
+  --color-ink: #1C241E;
+  --color-ink-body: #3B4239;
+  --color-ink-muted: #5E584D;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: #1C241E;
+    background-color: #F4EFE6;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #B44B1E;
+    outline-offset: 2px;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

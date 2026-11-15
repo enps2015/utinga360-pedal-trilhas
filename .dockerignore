@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.playwright-cli
+.aistudio
+.gmp_cache
+*.log
+npm-debug.log*
+coverage

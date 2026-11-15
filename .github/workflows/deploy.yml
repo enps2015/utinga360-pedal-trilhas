@@ -1,0 +1,98 @@
+name: Deploy Utinga360 para Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GCP_REGION: southamerica-east1
+  AR_REPO: utinga360-repo
+  SERVICE_NAME: utinga360
+
+jobs:
+  test-and-build:
+    name: Testes, Lint e Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Rodar testes unitários
+        run: npm test
+
+      - name: Validar tipos TypeScript
+        run: npm run lint
+
+      - name: Gerar build de produção (Vite)
+        run: npm run build
+
+  deploy-cloud-run:
+    name: Build Container e Deploy no Cloud Run
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Autenticar no Google Cloud (Service Account)
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configurar autenticação Docker no Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Garantir repositório Artifact Registry
+        run: |
+          gcloud artifacts repositories describe ${{ env.AR_REPO }} \
+            --location=${{ env.GCP_REGION }} >/dev/null 2>&1 || \
+          gcloud artifacts repositories create ${{ env.AR_REPO }} \
+            --repository-format=docker \
+            --location=${{ env.GCP_REGION }} \
+            --description="Imagens Docker do projeto Utinga360"
+
+      - name: Build e Push da imagem Docker
+        env:
+          IMAGE_URI: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+        run: |
+          docker build -t "$IMAGE_URI" .
+          docker push "$IMAGE_URI"
+
+      - name: Deploy no Google Cloud Run (escala para zero, 1 instância máx.)
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          flags: >-
+            --allow-unauthenticated
+            --port=8080
+            --memory=512Mi
+            --cpu=1
+            --min-instances=0
+            --max-instances=1
+            --concurrency=80
+            --timeout=60s
+            --set-env-vars=NODE_ENV=production,VITE_GOOGLE_MAPS_MAP_ID=${{ vars.VITE_GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID' }},GEMINI_MODEL=${{ vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
+            --set-secrets=GEMINI_API_KEY=utinga360-gemini-key:latest,GOOGLE_MAPS_API_KEY=utinga360-maps-key:latest
