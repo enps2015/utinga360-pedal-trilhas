@@ -52,6 +52,30 @@ Neste projeto, a IA generativa trabalha lado a lado com **dados públicos oficia
 
 ---
 
+## Capturas de Tela
+
+### 1. Mapa Inteligente, Rotas de Acesso e Trilhas Internas
+Visualização do Parque Estadual do Utinga com traçados do OpenStreetMap, pontos validados no Google Places, filtros de apoio e cálculo de rotas.
+
+![Mapa Inteligente do Utinga360](docs/screenshots/01-mapa-inteligente.png)
+
+### 2. Explorador de Trilhas Oficiais (IDEFLOR-Bio)
+Catálogo completo das 6 trilhas oficiais com filtro por dificuldade, extensão oficial e popularidade integrada ao Diário de Visitas.
+
+![Explorador de Trilhas Oficiais](docs/screenshots/02-trilhas-oficiais.png)
+
+### 3. Modo Ciclista (~4 km na Pista Principal)
+Orientações dedicadas para quem vai pedalar no parque, com foco na via pavimentada, regras de convivência e recomendações de segurança.
+
+![Modo Ciclista do Utinga360](docs/screenshots/03-modo-ciclista.png)
+
+### 4. Guia Utinga (IA conectada ao Mapa e Google Places)
+Assistente conversacional que consulta as trilhas internas, pontos do mapa e rotas reais de bicicleta até paradas do entorno (como o Bar do Lulu).
+
+![Chat Guia Utinga com IA e Google Maps](docs/screenshots/04-guia-utinga-chat.png)
+
+---
+
 ## Stack Tecnológica
 
 - **Frontend:** React 19, TypeScript, Tailwind CSS v4, Lucide React, `@vis.gl/react-google-maps`
@@ -67,6 +91,8 @@ Neste projeto, a IA generativa trabalha lado a lado com **dados públicos oficia
 .
 ├── .github/workflows/
 │   └── deploy.yml                  # Pipeline de testes, build e deploy (Cloud Run)
+├── docs/
+│   └── screenshots/                # Capturas de tela exibidas no README
 ├── public/
 │   ├── assets/
 │   │   ├── aistudio/               # Ilustração temática do autor
